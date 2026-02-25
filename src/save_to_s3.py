@@ -113,7 +113,7 @@ class S3Uploader:
                 f.write(f"\nS3_REGION={region_name}")
                 f.write(f"\nS3_BUCKET_NAME={bucket_name}")
                 f.write(f"\nAWS_ACCESS_KEY_ID={access_key}")
-                f.write(f"AWS_SECRET_ACCESS_KEY={secret_key}")
+                f.write(f"\nAWS_SECRET_ACCESS_KEY={secret_key}")
             logger.info(f"Credentials saved to {env_path}")
         except Exception as e:
             logger.warning(f"Failed to save credentials to .env: {e}")
@@ -133,5 +133,6 @@ def save_to_s3(image: str, output_path: str) -> bool:
     """
     uploader = S3Uploader()
     return uploader.upload_file(image, output_path)
+
 
 
