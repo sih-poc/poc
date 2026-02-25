@@ -24,26 +24,26 @@ class S3Uploader:
             bucket_name (str): S3 bucket name. If not provided, uses environment variable.
         """
         # Load credentials from environment or prompt user
-        self.region_name = region_name or os.environ.get("S3_REGION")
-        self.bucket_name = bucket_name or os.environ.get("S3_BUCKET_NAME")
+        region_name = region_name or os.environ.get("S3_REGION")
+        bucket_name = bucket_name or os.environ.get("S3_BUCKET_NAME")
 
         # Required AWS credentials
         aws_access_key_id = os.environ.get("AWS_ACCESS_KEY_ID")
         aws_secret_access_key = os.environ.get("AWS_SECRET_ACCESS_KEY")
 
         # Prompt for missing credentials
-        if not all([self.region_name, self.bucket_name, aws_access_key_id, aws_secret_access_key]):
+        if not all([region_name, bucket_name, aws_access_key_id, aws_secret_access_key]):
             logger.warning("Missing AWS credentials. Please provide them.")
 
-            self.region_name = (
+            region_name = (
                 region_name or getpass("Enter AWS Region: ").strip()
             )
-            self.bucket_name = bucket_name or getpass("Enter S3 Bucket Name: ").strip()
+            bucket_name = bucket_name or getpass("Enter S3 Bucket Name: ").strip()
             aws_access_key_id = getpass("Enter AWS Access Key ID: ").strip()
             aws_secret_access_key = getpass("Enter AWS Secret Access Key: ").strip()
 
             # Optionally save to .env (user choice)
-            self._save_to_env(self.region_name, self.bucket_name, aws_access_key_id, aws_secret_access_key)
+            self._save_to_env(region_name, bucket_name, aws_access_key_id, aws_secret_access_key)
 
         # Validate required credentials
         if not aws_access_key_id or not aws_secret_access_key:
@@ -52,11 +52,11 @@ class S3Uploader:
         try:
             self.s3_client = boto3.client(
                 "s3",
-                region_name=self.region_name,
+                region_name=region_name,
                 aws_access_key_id=aws_access_key_id,
                 aws_secret_access_key=aws_secret_access_key,
             )
-            logger.info(f"S3 client initialized for bucket '{self.bucket_name}' in {self.region_name}")
+            logger.info(f"S3 client initialized for bucket '{bucket_name}' in {region_name}")
         except Exception as e:
             logger.error(f"Failed to initialize S3 client: {e}")
             raise
@@ -83,8 +83,8 @@ class S3Uploader:
             logger.info(f"Uploading {os.path.basename(local_path)} to S3: {s3_key}")
 
             # Upload the file
-            self.s3_client.upload_file(local_path, self.bucket_name, s3_key)
-            logger.success(f"Successfully uploaded '{local_path}' to s3://{self.bucket_name}/{s3_key}")
+            self.s3_client.upload_file(local_path, s3_key)
+            logger.success(f"Successfully uploaded '{local_path}' to s3://{bucket_name}/{s3_key}")
             return True
 
         except botocore.exceptions.ClientError as e:
@@ -133,6 +133,5 @@ def save_to_s3(image: str, output_path: str) -> bool:
     """
     uploader = S3Uploader()
     return uploader.upload_file(image, output_path)
-
 
 
