@@ -13,6 +13,13 @@ import spacy
 # Configuration imports - ensure these are defined properly elsewhere in your project
 from config.brand_config import REGULATORY_TEXTS, NET_VOLUME, NUTRITIONAL_FACTS, INGREDIENTS
 
+# Check if the model exists
+if not spacy.util.is_package("en_core_web_md"):
+    print("Model not found, downloading...")
+    spacy.cli.download("en_core_web_md")
+else:
+    print("Model already installed.")
+
 def preprocess_image(image_path: str) -> Image.Image:
     """Preprocess an image for optimal OCR performance."""
     try:
@@ -179,3 +186,4 @@ def validate_branding_compliance(image_path: str, label_type: str, region: str) 
         compliance_result['is_compliant'] = False
 
     return compliance_result
+
