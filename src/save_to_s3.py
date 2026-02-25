@@ -122,13 +122,13 @@ class S3Uploader:
 
             # Only write if not already present (avoid duplicates)
             with open(env_path, "a") as f:
-                if not has_region:
+                if not region_name:
                     f.write(f"\nS3_REGION='{region_name}'")
-                if not has_bucket:
+                if not bucket_name:
                     f.write(f"\nS3_BUCKET_NAME='{bucket_name}'")
-                if not has_access_key:
+                if not access_key:
                     f.write(f"\nAWS_ACCESS_KEY_ID='{access_key}'")
-                if not has_secret_key:
+                if not secret_key:
                     f.write(f"\nAWS_SECRET_ACCESS_KEY='{secret_key}'")
 
             logger.info(f"Credentials saved to {env_path}")
