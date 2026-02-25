@@ -108,7 +108,9 @@ async def generate_labels(region: str, flavor: str, attribute: str, label: str) 
 
             # Save to S3
             try:
-                uploader.upload_file(output_file_path, s3_output_path)
+                save_to_s3(output_file_path, s3_output_path)
+                #uploader.upload_file(local_path, s3_output_path)
+
                 logger.success("Uploaded label successfully to S3")
             except ImportError as e:
                 logger.warning(f"Module 'save_to_s3' missing: Skipping upload. Error: {e}")
