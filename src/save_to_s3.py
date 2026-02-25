@@ -110,10 +110,10 @@ class S3Uploader:
         env_path = ".env"
         try:
             with open(env_path, "a") as f:
-                f.write(f"\nS3_REGION={region_name}")
-                f.write(f"\nS3_BUCKET_NAME={bucket_name}")
-                f.write(f"\nAWS_ACCESS_KEY_ID={access_key}")
-                f.write(f"\nAWS_SECRET_ACCESS_KEY={secret_key}")
+                f.write(f"\nS3_REGION='{region_name}'")
+                f.write(f"\nS3_BUCKET_NAME='{bucket_name}'")
+                f.write(f"\nAWS_ACCESS_KEY_ID='{access_key}'")
+                f.write(f"\nAWS_SECRET_ACCESS_KEY='{secret_key}'")
             logger.info(f"Credentials saved to {env_path}")
         except Exception as e:
             logger.warning(f"Failed to save credentials to .env: {e}")
