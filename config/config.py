@@ -64,15 +64,7 @@ HF_TOKEN = os.environ.get("HF_TOKEN")
 if not HF_TOKEN:
     logger.warning("HF_TOKEN not found in environment variables.")
     # Prompt user to enter token interactively
-    HF_TOKEN = getpass.getpass("Please enter your Hugging Face token: ").strip()
-
-    env_path = ".env"
-    try:
-        with open(env_path, "a") as f:
-            f.write(f"\nHF_TOKEN={HF_TOKEN}")
-        logger.info(f"HF_TOKEN saved to {env_path}")
-    except Exception as e:
-        logger.warning(f"Failed to save HF_TOKEN to .env: {e}")
+    HF_TOKEN = getpass.getpass("Please enter your Hugging Face token: ")
 
     if not HF_TOKEN:
         raise ValueError("Hugging Face token is required. Aborting.")
