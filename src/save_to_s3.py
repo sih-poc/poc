@@ -24,8 +24,8 @@ class S3Uploader:
             bucket_name (str): S3 bucket name. If not provided, uses environment variable.
         """
         # Load credentials from environment or prompt user
-        region_name = region_name or os.environ.get("S3_REGION")
-        bucket_name = bucket_name or os.environ.get("S3_BUCKET_NAME")
+        self.region_name = region_name or os.environ.get("S3_REGION")
+        self.bucket_name = bucket_name or os.environ.get("S3_BUCKET_NAME")
 
         # Required AWS credentials
         aws_access_key_id = os.environ.get("AWS_ACCESS_KEY_ID")
@@ -84,7 +84,7 @@ class S3Uploader:
 
             # Upload the file
             self.s3_client.upload_file(local_path, s3_key)
-            logger.success(f"Successfully uploaded '{local_path}' to s3://{bucket_name}/{s3_key}")
+            logger.success(f"Successfully uploaded '{local_path}' to s3://{self.bucket_name}/{s3_key}")
             return True
 
         except botocore.exceptions.ClientError as e:
