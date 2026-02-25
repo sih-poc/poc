@@ -1,3 +1,5 @@
+# save_to_s3.py
+
 import os
 from getpass import getpass
 from typing import Optional, Dict, Any
@@ -11,7 +13,6 @@ from loguru import logger
 # Load environment variables from .env file (if present)
 load_dotenv()
 
-
 class S3Uploader:
     """A class to upload files to Amazon S3 with robust error handling."""
 
@@ -23,27 +24,25 @@ class S3Uploader:
             region_name (str): AWS region name. If not provided, uses environment variable.
             bucket_name (str): S3 bucket name. If not provided, uses environment variable.
         """
-        # Load credentials from environment or prompt user
+        # Load from env or defaults
         self.region_name = region_name or os.environ.get("S3_REGION")
         self.bucket_name = bucket_name or os.environ.get("S3_BUCKET_NAME")
 
-        # Required AWS credentials
         aws_access_key_id = os.environ.get("AWS_ACCESS_KEY_ID")
         aws_secret_access_key = os.environ.get("AWS_SECRET_ACCESS_KEY")
 
-        # Prompt for missing credentials
-        if not all([region_name, bucket_name, aws_access_key_id, aws_secret_access_key]):
+        # If any required credential is missing, prompt user
+        if not all([self.region_name, self.bucket_name, aws_access_key_id, aws_secret_access_key]):
             logger.warning("Missing AWS credentials. Please provide them.")
 
-            region_name = (
-                region_name or getpass("Enter AWS Region: ").strip()
-            )
-            bucket_name = bucket_name or getpass("Enter S3 Bucket Name: ").strip()
+            # Prompt for input and update instance variables directly
+            self.region_name = getpass("Enter AWS Region: ").strip()
+            self.bucket_name = getpass("Enter S3 Bucket Name: ").strip()
             aws_access_key_id = getpass("Enter AWS Access Key ID: ").strip()
             aws_secret_access_key = getpass("Enter AWS Secret Access Key: ").strip()
 
-            # Optionally save to .env (user choice)
-            self._save_to_env(region_name, bucket_name, aws_access_key_id, aws_secret_access_key)
+            # Save to .env
+            self._save_to_env(self.region_name, self.bucket_name, aws_access_key_id, aws_secret_access_key)
 
         # Validate required credentials
         if not aws_access_key_id or not aws_secret_access_key:
@@ -56,7 +55,7 @@ class S3Uploader:
                 aws_access_key_id=aws_access_key_id,
                 aws_secret_access_key=aws_secret_access_key,
             )
-            logger.info(f"S3 client initialized for bucket '{bucket_name}' in {region_name}")
+            logger.info(f"S3 client initialized for bucket '{self.bucket_name}' in {self.region_name}")
         except Exception as e:
             logger.error(f"Failed to initialize S3 client: {e}")
             raise
@@ -83,7 +82,11 @@ class S3Uploader:
             logger.info(f"Uploading {os.path.basename(local_path)} to S3: {s3_key}")
 
             # Upload the file
-            self.s3_client.upload_file(local_path, s3_key)
+            self.s3_client.upload_file(
+                Filename=local_path,
+                Bucket=self.bucket_name,
+                Key=s3_key
+            )
             logger.success(f"Successfully uploaded '{local_path}' to s3://{self.bucket_name}/{s3_key}")
             return True
 
@@ -109,11 +112,25 @@ class S3Uploader:
         """Save AWS credentials to .env file (optional)."""
         env_path = ".env"
         try:
+            # # Check if we already have these values
+            # with open(env_path, "r") as f:
+            #     existing_content = f.read()
+            #     has_region = f"S3_REGION='{region_name}'" in existing_content
+            #     has_bucket = f"S3_BUCKET_NAME='{bucket_name}'" in existing_content
+            #     has_access_key = f"AWS_ACCESS_KEY_ID='{access_key}'" in existing_content
+            #     has_secret_key = f"AWS_SECRET_ACCESS_KEY='{secret_key}'" in existing_content
+
+            # Only write if not already present (avoid duplicates)
             with open(env_path, "a") as f:
-                f.write(f"\nS3_REGION='{region_name}'")
-                f.write(f"\nS3_BUCKET_NAME='{bucket_name}'")
-                f.write(f"\nAWS_ACCESS_KEY_ID='{access_key}'")
-                f.write(f"\nAWS_SECRET_ACCESS_KEY='{secret_key}'")
+                if not has_region:
+                    f.write(f"\nS3_REGION='{region_name}'")
+                if not has_bucket:
+                    f.write(f"\nS3_BUCKET_NAME='{bucket_name}'")
+                if not has_access_key:
+                    f.write(f"\nAWS_ACCESS_KEY_ID='{access_key}'")
+                if not has_secret_key:
+                    f.write(f"\nAWS_SECRET_ACCESS_KEY='{secret_key}'")
+
             logger.info(f"Credentials saved to {env_path}")
         except Exception as e:
             logger.warning(f"Failed to save credentials to .env: {e}")
@@ -133,5 +150,3 @@ def save_to_s3(image: str, output_path: str) -> bool:
     """
     uploader = S3Uploader()
     return uploader.upload_file(image, output_path)
-
-
