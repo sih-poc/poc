@@ -44,7 +44,7 @@ All creative output is grounded in this consistent brand identity:
 |-------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
 | Product Type                  | Energy Drink                                                                                                                      |
 | Brand Name                    | Ctrl+Z Energy                                                                                                                     |
-| Target Audience               | Devs who just lost their project and need a reset.                                                                                |
+| Target Audience               | Young Adults                                                                                |
 | Subtitle                      | For the dev who just lost their entire project and needs a reset.                                                                 |
 | Tagline                       | Undo your burnout.                                                                                                                |
 | Style                         | Modern tech aesthetic with neon cyberpunk vibes.                                                                                  |
@@ -318,3 +318,4 @@ This project enables automated, scalable, and compliant packaging design for a g
 * * * * *
 
 End of README.md
+
